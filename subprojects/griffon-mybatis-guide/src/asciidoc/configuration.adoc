@@ -1,0 +1,103 @@
+
+[[_configuration]]
+= Build Configuration
+
+== Gradle
+
+You have two options for configuring this plugin: automatic and manual.
+
+=== Automatic
+
+As long as the project has the `org.codehaus.griffon.griffon` plugin applied to it you
+may include the following snippet in `build.gradle`
+
+[source,groovy,options="nowrap"]
+[subs="attributes"]
+----
+dependencies {
+    griffon '{project-group}:griffon-mybatis-plugin:{project-version}'
+}
+----
+
+The `griffon` plugin will take care of the rest given its configuration.
+
+=== Manual
+
+You will need to configure any of the following blocks depending on your setup
+
+[source,groovy,options="nowrap"]
+[subs="attributes"]
+----
+dependencies {
+    compile '{project-group}:griffon-mybatis-core:{project-version}'
+}
+----
+
+.Compile Only
+[source,groovy,options="nowrap"]
+[subs="attributes"]
+----
+dependencies {
+    compileOnly '{project-group}:griffon-mybatis-groovy-compile:{project-version}'
+}
+----
+
+== Maven
+
+First configure the `griffon-mybatis-plugin` BOM in your POM file, by placing the following
+snippet before the `<build>` element
+
+[source,xml,options="nowrap"]
+[subs="attributes,verbatim"]
+----
+<dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>{project-group}</groupId>
+            <artifactId>griffon-mybatis-plugin</artifactId>
+            <version>{project-version}</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+    </dependencies>
+</dependencyManagement>
+----
+
+Next configure dependencies as required by your particular setup
+
+[source,xml,options="nowrap"]
+[subs="attributes,verbatim"]
+----
+<dependency>
+    <groupId>{project-group}</groupId>
+    <artifactId>griffon-mybatis-core</artifactId>
+</dependency>
+----
+
+.Provided scope
+[source,xml,options="nowrap"]
+[subs="attributes,verbatim"]
+----
+<dependency>
+    <groupId>{project-group}</groupId>
+    <artifactId>griffon-mybatis-groovy-compile</artifactId>
+</dependency>
+----
+
+Don't forget to configure all `-compile` dependencies with the maven-surefire-plugin, like so
+
+[source,xml,options="nowrap"]
+[subs="attributes,verbatim"]
+----
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-surefire-plugin</artifactId>
+    <configuration>
+        <classpathDependencyExcludes>
+            <classpathDependencyExclude>
+                org.codehaus.griffon:griffon-mybatis-groovy-compile
+            </classpathDependencyExclude>
+        </classpathDependencyExcludes>
+    </configuration>
+</plugin>
+----
