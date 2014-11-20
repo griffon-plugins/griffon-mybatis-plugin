@@ -1,0 +1,4 @@
+griffon.plugins.mybatis
+griffon.plugins.mybatis.exceptions
+griffon.transform
+org.codehaus.griffon.runtime.mybatis
