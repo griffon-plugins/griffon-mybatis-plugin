@@ -20,7 +20,6 @@ import griffon.core.test.GriffonUnitRule
 import griffon.inject.BindTo
 import griffon.plugins.mybatis.exceptions.RuntimeMybatisException
 import griffon.plugins.mybatis.mappers.PersonMapper
-import groovy.sql.Sql
 import org.apache.ibatis.session.SqlSession
 import org.junit.Rule
 import spock.lang.Specification

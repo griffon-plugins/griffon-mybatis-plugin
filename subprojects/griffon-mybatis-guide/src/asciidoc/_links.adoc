@@ -1,9 +1,12 @@
 
-:link_mybatis: link:http://mybatis.github.io/mybatis-3/[MyBatis, window="_blank"]
+:link_griffon_datasource_plugin: link:http://griffon-plugins.github.io/griffon-datasource-plugin[griffon-datasource-plugin, window="_blank"]
+:link_mybatis: link:http://mybatis.github.io/mybatis-3[MyBatis, window="_blank"]
+:link_sql_session_factory: link:http://mybatis.github.io/mybatis-3/apidocs/reference/org/apache/ibatis/session/SqlSessionFactory.html[SqlSessionFactory, window="_blank"]
+
 :api_mybatis_handler: link:api/griffon/plugins/mybatis/MybatisHandler.html[MybatisHandler, window="_blank"]
 :api_mybatis_callback: link:api/griffon/plugins/mybatis/MybatisCallback.html[MybatisCallback, window="_blank"]
-:api_connection_callback: link:api/griffon/plugins/mybatis/ConnectionCallback.html[ConnectionCallback, window="_blank"]
 :api_mybatis_aware: link:api/griffon/transform/MybatisAware.html[@MybatisAware, window="_blank"]
+:api_mybatis_bootstrap: link:api/griffon/plugins/mybatis/MybatisBootstrap.html[MybatisBootstrap, window="_blank"]
 
 :path_griffon_mybatis_core: {rootdir}/subprojects/griffon-mybatis-core
 :path_griffon_mybatis_groovy_compile: {rootdir}/subprojects/griffon-mybatis-groovy-compile
