@@ -9,7 +9,7 @@ image:https://api.bintray.com/packages/griffon/griffon-plugins/{project-name}/im
 
 ---
 
-The Mybatis plugin enables lightweight access multiple SQL mybatiss.
+The Mybatis plugin enables lightweight access multiple datasources using link:http://mybatis.github.io/mybatis-3[MyBatis, window="_blank"].
 This plugin does NOT provide domain classes nor dynamic finders like GORM does.
 
 Refer to the link:http://griffon-plugins.github.io/{project-name}/[plugin guide, window="_blank"] for
