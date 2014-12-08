@@ -62,7 +62,7 @@ MyBatis requires a mapper class for each type you'd like to map to a table. The 
 that should be added to a `{link_sql_session_factory}` as long as they are annotated with `@TypeProviderFor`. For example
 
 [source,groovy,options="nowrap"]
-.src/main/groovy/com/acme/mappers/PersonMapper.groovy
+.src/main/groovy/griffon/plugins/mybatis/mappers/PersonMapper.groovy
 ----
 include::{path_griffon_mybatis_core}/src/test/groovy/griffon/plugins/mybatis/mappers/PersonMapper.groovy[lines=16..-1]
 ----
@@ -144,7 +144,7 @@ import griffon.plugins.mybatis.MybatisHandler;
 import griffon.plugins.mybatis.MybatisCallback;
 import org.apache.ibatis.session.SqlSession;
 
-import com.acme.mappers.PersonMapper
+import com.acme.mappers.PersonMapper;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
