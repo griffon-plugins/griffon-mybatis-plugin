@@ -16,7 +16,7 @@
 <h1>Griffon Mybatis Plugin</h1>
 <div class="details">
 <span id="author" class="author">Andres Almiray</span><br>
-<span id="revnumber">version 1.0.0</span>
+<span id="revnumber">version 1.1.0</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -143,6 +143,33 @@ shows</p>
 }</code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>The following properties are optional</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Property</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Default</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">connect_on_startup</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">boolean</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Establishes a connection to the datasource at the end of the <code>Bootstrap</code> phase.</p></td>
+</tr>
+</tbody>
+</table>
 <div class="paragraph">
 <p>The plugin&#8217;s <a href="#_modules">module</a> registers a <code><a href="api/griffon/plugins/mybatis/MybatisHandler.html" target="_blank">MybatisHandler</a></code> helper class that defines the base contract
 for accessing a datasource and issue SQL queries to it. This class has the following methods</p>
@@ -382,7 +409,7 @@ into said class.</p>
 <h3 id="_dsl_descriptors"><a class="anchor" href="#_dsl_descriptors"></a>2.5. DSL Descriptors</h3>
 <div class="paragraph">
 <p>This plugin provides DSL descriptors for Intellij IDEA and Eclipse (provided you have the Groovy Eclipse plugin installed).
-These descriptors are found inside the <code>griffon-mybatis-groovy-compile-1.0.0.jar</code>, with locations</p>
+These descriptors are found inside the <code>griffon-mybatis-groovy-compile-1.1.0.jar</code>, with locations</p>
 </div>
 <div class="ulist">
 <ul>
@@ -414,7 +441,7 @@ may include the following snippet in <code>build.gradle</code></p>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight nowrap"><code data-lang="groovy">dependencies {
-    griffon 'org.codehaus.griffon.plugins:griffon-mybatis-plugin:1.0.0'
+    griffon 'org.codehaus.griffon.plugins:griffon-mybatis-plugin:1.1.0'
 }</code></pre>
 </div>
 </div>
@@ -430,7 +457,7 @@ may include the following snippet in <code>build.gradle</code></p>
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight nowrap"><code data-lang="groovy">dependencies {
-    compile 'org.codehaus.griffon.plugins:griffon-mybatis-core:1.0.0'
+    compile 'org.codehaus.griffon.plugins:griffon-mybatis-core:1.1.0'
 }</code></pre>
 </div>
 </div>
@@ -438,7 +465,7 @@ may include the following snippet in <code>build.gradle</code></p>
 <div class="title">Compile Only</div>
 <div class="content">
 <pre class="CodeRay highlight nowrap"><code data-lang="groovy">dependencies {
-    compileOnly 'org.codehaus.griffon.plugins:griffon-mybatis-groovy-compile:1.0.0'
+    compileOnly 'org.codehaus.griffon.plugins:griffon-mybatis-groovy-compile:1.1.0'
 }</code></pre>
 </div>
 </div>
@@ -457,7 +484,7 @@ snippet before the <code>&lt;build&gt;</code> element</p>
         <span class="tag">&lt;dependency&gt;</span>
             <span class="tag">&lt;groupId&gt;</span>org.codehaus.griffon.plugins<span class="tag">&lt;/groupId&gt;</span>
             <span class="tag">&lt;artifactId&gt;</span>griffon-mybatis-plugin<span class="tag">&lt;/artifactId&gt;</span>
-            <span class="tag">&lt;version&gt;</span>1.0.0<span class="tag">&lt;/version&gt;</span>
+            <span class="tag">&lt;version&gt;</span>1.1.0<span class="tag">&lt;/version&gt;</span>
             <span class="tag">&lt;type&gt;</span>pom<span class="tag">&lt;/type&gt;</span>
             <span class="tag">&lt;scope&gt;</span>import<span class="tag">&lt;/scope&gt;</span>
         <span class="tag">&lt;/dependency&gt;</span>
@@ -541,6 +568,10 @@ bind(MybatisFactory.class)
 
 bind(MybatisHandler.class)
     .to(DefaultMybatisHandler.class)
+    .asSingleton();
+
+bind(GriffonAddon.class)
+    .to(MybatisAddon.class)
     .asSingleton();</code></pre>
 </div>
 </div>
@@ -561,8 +592,8 @@ bind(MybatisHandler.class)
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 1.0.0<br>
-Last updated 2014-11-20 20:23:25 CET
+Version 1.1.0<br>
+Last updated 2014-11-20 13:23:25 CST
 </div>
 </div>
 </body>
