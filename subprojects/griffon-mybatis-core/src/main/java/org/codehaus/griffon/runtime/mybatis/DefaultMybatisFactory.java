@@ -39,11 +39,13 @@ import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.sql.DataSource;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
 import static griffon.core.GriffonExceptionHandler.sanitize;
+import static griffon.util.GriffonNameUtils.requireNonBlank;
 import static java.util.Arrays.asList;
 import static java.util.Objects.requireNonNull;
 
@@ -52,6 +54,8 @@ import static java.util.Objects.requireNonNull;
  */
 public class DefaultMybatisFactory extends AbstractObjectFactory<SqlSessionFactory> implements MybatisFactory {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultMybatisFactory.class);
+    private static final String ERROR_SESSION_FACTORY_NAME_BLANK = "Argument 'sessionFactoryName' must not be blank";
+    private final Set<String> sessionFactoryNames = new LinkedHashSet<>();
 
     @Inject
     private DataSourceFactory dataSourceFactory;
@@ -70,6 +74,25 @@ public class DefaultMybatisFactory extends AbstractObjectFactory<SqlSessionFacto
     @Inject
     public DefaultMybatisFactory(@Nonnull @Named("mybatis") griffon.core.Configuration configuration, @Nonnull GriffonApplication application) {
         super(configuration, application);
+        sessionFactoryNames.add(KEY_DEFAULT);
+
+        if (configuration.containsKey(getPluralKey())) {
+            Map<String, Object> sessionFactories = (Map<String, Object>) configuration.get(getPluralKey());
+            sessionFactoryNames.addAll(sessionFactories.keySet());
+        }
+    }
+
+    @Nonnull
+    @Override
+    public Set<String> getSessionFactoryNames() {
+        return sessionFactoryNames;
+    }
+
+    @Nonnull
+    @Override
+    public Map<String, Object> getConfigurationFor(@Nonnull String sessionFactoryName) {
+        requireNonBlank(sessionFactoryName, ERROR_SESSION_FACTORY_NAME_BLANK);
+        return narrowConfig(sessionFactoryName);
     }
 
     @Nonnull
@@ -125,7 +148,9 @@ public class DefaultMybatisFactory extends AbstractObjectFactory<SqlSessionFacto
         Environment environment = new Environment(dataSourceName, new JdbcTransactionFactory(), dataSource);
         Configuration configuration = new Configuration(environment);
 
-        GriffonClassUtils.setProperties(configuration, config);
+        Map<String, Object> copyOfConfig = new LinkedHashMap<>(config);
+        copyOfConfig.remove("connect_on_startup");
+        GriffonClassUtils.setProperties(configuration, copyOfConfig);
 
         if (mappers.isEmpty()) {
             readMappers();

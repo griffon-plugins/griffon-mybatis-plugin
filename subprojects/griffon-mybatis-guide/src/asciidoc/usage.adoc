@@ -34,6 +34,16 @@ shows
 include::{path_griffon_mybatis_core}/src/test/resources/Mybatis.groovy[lines=39..46]
 ----
 
+The following properties are optional
+
+[cols="4*",options="header"]
+|===
+
+| Property           | Type    | Default | Description
+| connect_on_startup | boolean | false   | Establishes a connection to the datasource at the end of the `Bootstrap` phase.
+
+|===
+
 The plugin's <<_modules, module>> registers a `{api_mybatis_handler}` helper class that defines the base contract
 for accessing a datasource and issue SQL queries to it. This class has the following methods
 

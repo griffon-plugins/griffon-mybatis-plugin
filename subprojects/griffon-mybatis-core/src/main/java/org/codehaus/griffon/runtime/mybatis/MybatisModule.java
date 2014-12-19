@@ -16,7 +16,9 @@
 package org.codehaus.griffon.runtime.mybatis;
 
 import griffon.core.Configuration;
+import griffon.core.addon.GriffonAddon;
 import griffon.core.injection.Module;
+import griffon.inject.DependsOn;
 import griffon.plugins.mybatis.MybatisFactory;
 import griffon.plugins.mybatis.MybatisHandler;
 import griffon.plugins.mybatis.MybatisStorage;
@@ -32,6 +34,7 @@ import static griffon.util.AnnotationUtils.named;
 /**
  * @author Andres Almiray
  */
+@DependsOn("datasource")
 @Named("mybatis")
 @ServiceProviderFor(Module.class)
 public class MybatisModule extends AbstractModule {
@@ -58,6 +61,10 @@ public class MybatisModule extends AbstractModule {
 
         bind(MybatisHandler.class)
             .to(DefaultMybatisHandler.class)
+            .asSingleton();
+
+        bind(GriffonAddon.class)
+            .to(MybatisAddon.class)
             .asSingleton();
         // end::bindings[]
     }

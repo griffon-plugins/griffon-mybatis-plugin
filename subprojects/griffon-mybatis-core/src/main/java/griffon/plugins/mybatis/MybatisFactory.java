@@ -18,8 +18,17 @@ package griffon.plugins.mybatis;
 import griffon.core.storage.ObjectFactory;
 import org.apache.ibatis.session.SqlSessionFactory;
 
+import javax.annotation.Nonnull;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * @author Andres Almiray
  */
 public interface MybatisFactory extends ObjectFactory<SqlSessionFactory> {
+    @Nonnull
+    Set<String> getSessionFactoryNames();
+
+    @Nonnull
+    Map<String, Object> getConfigurationFor(@Nonnull String sessionFactoryName);
 }
