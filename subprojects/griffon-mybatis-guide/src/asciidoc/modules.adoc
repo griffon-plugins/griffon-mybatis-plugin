@@ -14,6 +14,8 @@ binding if the wrong type has been applied by the Griffon runtime.
 
 Module name: `mybatis`
 
+Depends on: `datasource`
+
 [source,java,options="nowrap"]
 ----
 include::{subproject-base}core{java-source}{package-base}/MybatisModule.java[tags=bindings,indent=0]
