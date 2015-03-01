@@ -52,7 +52,7 @@ public interface MybatisAwareConstants extends BaseConstants {
         method(
             type(VOID),
             METHOD_CLOSE_SQL_SESSION,
-            args(annotatedType(types(type(JAVAX_ANNOTATION_NULLABLE)), JAVA_LANG_STRING))
+            args(annotatedType(types(type(JAVAX_ANNOTATION_NONNULL)), JAVA_LANG_STRING))
         ),
 
         annotatedMethod(

@@ -40,7 +40,8 @@ The following properties are optional
 |===
 
 | Property           | Type    | Default | Description
-| connect_on_startup | boolean | false   | Establishes a connection to the datasource at the end of the `Bootstrap` phase.
+| connect_on_startup | boolean | false   | Establishes a connection to the datasource at the beginning of the `Startup` phase.
+| jmx                | boolean | true    | Expose sessions using JMX.
 
 |===
 
@@ -139,7 +140,7 @@ public class ApplicationModule extends AbstractModule {
 
 == Example
 
-The following is a trivial usage of the `{api_mybatis_handler}` inside a service
+The following is a trivial usage of the `{api_mybatis_handler}` inside a Java service
 
 [source,java,options="nowrap"]
 .com.acme.SampleService.java
@@ -175,6 +176,36 @@ public class SampleService extends AbstractGriffonService {
 }
 ----
 
+Here's the Groovy version of it
+
+[source,groovy,options="nowrap"]
+.com.acme.SampleService.groovy
+----
+package com.acme
+
+import griffon.core.artifact.GriffonService
+import griffon.metadata.ArtifactProviderFor
+
+import griffon.plugins.mybatis.MybatisHandler
+import org.apache.ibatis.session.SqlSession
+
+import com.acme.mappers.PersonMapper
+
+import javax.inject.Inject
+
+@ArtifactProviderFor(GriffonService)
+class SampleService {
+    @Inject
+    private MybatisHandler mybatisHandler
+
+    String getPersonName(int id) {
+         mybatisHandler.withSqlSession { String sessionFactoryName, SqlSession session ->
+             session.getMapper(PersonMapper)?.findPersonById(id)?.name
+         }
+    }
+}
+----
+
 == Events
 
 The following events will be triggered by `{api_mybatis_handler}`
@@ -189,7 +220,31 @@ NOTE: DataSource events may be triggered during connection and disconnection fro
 == AST Transformation
 
 You can apply the `{api_mybatis_aware}` AST transformation on any class. This injects the behavior of `{api_mybatis_handler}`
-into said class.
+into said class. The previous Groovy service example can be rewritten as follows
+
+[source,groovy,options="nowrap"]
+.com.acme.SampleService.groovy
+----
+package com.acme
+
+import griffon.core.artifact.GriffonService
+import griffon.metadata.ArtifactProviderFor
+import griffon.transform.MybatisAware
+
+import org.apache.ibatis.session.SqlSession
+
+import com.acme.mappers.PersonMapper
+
+@MybatisAware
+@ArtifactProviderFor(GriffonService)
+class SampleService {
+    String getPersonName(int id) {
+         withSqlSession { String sessionFactoryName, SqlSession session ->
+             session.getMapper(PersonMapper)?.findPersonById(id)?.name
+         }
+    }
+}
+----
 
 == DSL Descriptors
 

@@ -67,6 +67,9 @@ public class DefaultMybatisHandler implements MybatisHandler {
             return callback.handle(sessionFactoryName, session);
         } catch (Exception e) {
             throw new RuntimeMybatisException(sessionFactoryName, e);
+        } finally {
+            session.commit();
+            session.close();
         }
     }
 

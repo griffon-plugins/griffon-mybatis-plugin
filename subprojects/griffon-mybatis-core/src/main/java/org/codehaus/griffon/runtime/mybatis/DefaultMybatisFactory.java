@@ -17,9 +17,11 @@ package org.codehaus.griffon.runtime.mybatis;
 
 import griffon.core.ApplicationClassLoader;
 import griffon.core.GriffonApplication;
+import griffon.core.env.Metadata;
 import griffon.core.injection.Injector;
 import griffon.plugins.datasource.DataSourceFactory;
 import griffon.plugins.datasource.DataSourceStorage;
+import griffon.plugins.monitor.MBeanManager;
 import griffon.plugins.mybatis.MybatisBootstrap;
 import griffon.plugins.mybatis.MybatisFactory;
 import griffon.plugins.mybatis.MybatisMapper;
@@ -32,6 +34,7 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.codehaus.griffon.runtime.core.storage.AbstractObjectFactory;
+import org.codehaus.griffon.runtime.jmx.SqlSessionFactoryMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,6 +48,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static griffon.core.GriffonExceptionHandler.sanitize;
+import static griffon.util.ConfigUtils.getConfigValueAsBoolean;
 import static griffon.util.GriffonNameUtils.requireNonBlank;
 import static java.util.Arrays.asList;
 import static java.util.Objects.requireNonNull;
@@ -68,6 +72,12 @@ public class DefaultMybatisFactory extends AbstractObjectFactory<SqlSessionFacto
 
     @Inject
     private Injector injector;
+
+    @Inject
+    private MBeanManager mBeanManager;
+
+    @Inject
+    private Metadata metadata;
 
     private final Set<Class<?>> mappers = new LinkedHashSet<>();
 
@@ -114,6 +124,11 @@ public class DefaultMybatisFactory extends AbstractObjectFactory<SqlSessionFacto
         event("MybatisConnectStart", asList(name, config));
         SqlSessionFactory sqlSessionFactory = createSqlSessionFactory(config, name);
 
+        if (getConfigValueAsBoolean(config, "jmx", true)) {
+            sqlSessionFactory = new JMXAwareSqlSessionFactory(sqlSessionFactory);
+            registerMBeans(name, (JMXAwareSqlSessionFactory) sqlSessionFactory);
+        }
+
         try (SqlSession session = openSession(name, sqlSessionFactory)) {
             for (Object o : injector.getInstances(MybatisBootstrap.class)) {
                 ((MybatisBootstrap) o).init(name, session);
@@ -138,7 +153,17 @@ public class DefaultMybatisFactory extends AbstractObjectFactory<SqlSessionFacto
 
         closeDataSource(name);
 
+        if (getConfigValueAsBoolean(config, "jmx", true)) {
+            ((JMXAwareSqlSessionFactory) instance).disposeMBeans();
+        }
+
         event("MybatisDisconnectEnd", asList(name, config));
+    }
+
+    private void registerMBeans(@Nonnull String name, @Nonnull JMXAwareSqlSessionFactory sqlSessionFactory) {
+        RecordingSqlSessionFactory recordingSqlSessionFactory = (RecordingSqlSessionFactory) sqlSessionFactory.getDelegate();
+        SqlSessionFactoryMonitor sqlSessionFactoryMonitor = new SqlSessionFactoryMonitor(metadata, recordingSqlSessionFactory, name);
+        sqlSessionFactory.addObjectName(mBeanManager.registerMBean(sqlSessionFactoryMonitor, false).getCanonicalName());
     }
 
     @Nonnull
@@ -160,7 +185,7 @@ public class DefaultMybatisFactory extends AbstractObjectFactory<SqlSessionFacto
             configuration.addMapper(mapper);
         }
 
-        return new SqlSessionFactoryBuilder().build(configuration);
+        return new RecordingSqlSessionFactory(new SqlSessionFactoryBuilder().build(configuration));
     }
 
     private void closeDataSource(@Nonnull String dataSourceName) {

@@ -16,12 +16,16 @@
 package org.codehaus.griffon.runtime.mybatis;
 
 import griffon.core.GriffonApplication;
+import griffon.core.env.Metadata;
 import griffon.inject.DependsOn;
+import griffon.plugins.monitor.MBeanManager;
 import griffon.plugins.mybatis.MybatisCallback;
 import griffon.plugins.mybatis.MybatisFactory;
 import griffon.plugins.mybatis.MybatisHandler;
+import griffon.plugins.mybatis.MybatisStorage;
 import org.apache.ibatis.session.SqlSession;
 import org.codehaus.griffon.runtime.core.addon.AbstractGriffonAddon;
+import org.codehaus.griffon.runtime.jmx.MybatisStorageMonitor;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
@@ -42,6 +46,20 @@ public class MybatisAddon extends AbstractGriffonAddon {
 
     @Inject
     private MybatisFactory mybatisFactory;
+
+    @Inject
+    private MybatisStorage mybatisStorage;
+
+    @Inject
+    private MBeanManager mbeanManager;
+
+    @Inject
+    private Metadata metadata;
+
+    @Override
+    public void init(@Nonnull GriffonApplication application) {
+        mbeanManager.registerMBean(new MybatisStorageMonitor(metadata, mybatisStorage));
+    }
 
     public void onStartupStart(@Nonnull GriffonApplication application) {
         for (String sessionFactoryName : mybatisFactory.getSessionFactoryNames()) {
