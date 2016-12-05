@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2015 the original author or authors.
+ * Copyright 2014-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package griffon.plugins.mybatis
 
+import griffon.core.CallableWithArgs
 import griffon.core.GriffonApplication
 import griffon.core.test.GriffonUnitRule
 import griffon.inject.BindTo
@@ -52,9 +53,9 @@ class MybatisSpec extends Specification {
         ]
         List events = []
         eventNames.each { name ->
-            application.eventRouter.addEventListener(name) { Object... args ->
+            application.eventRouter.addEventListener(name, { Object... args ->
                 events << [name: name, args: args]
-            }
+            } as CallableWithArgs)
         }
 
         when:

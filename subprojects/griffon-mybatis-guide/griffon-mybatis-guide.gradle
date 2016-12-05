@@ -6,7 +6,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'org.asciidoctor:asciidoctor-gradle-plugin:1.5.2'
+        classpath 'org.asciidoctor:asciidoctor-gradle-plugin:1.5.3'
         classpath 'com.bmuschko:gradle-java2html-plugin:2.0'
     }
 }
@@ -70,7 +70,7 @@ task apiDocs(type: Javadoc, dependsOn: copyDocs) {
                            'http://docs.oracle.com/javase/7/docs/api/',
                            'http://jsr-305.googlecode.com/svn/trunk/javadoc/',
                            'http://atinject.googlecode.com/svn/trunk/javadoc/',
-                           'http://new.griffon-framework.org/guide/latest/api/']
+                           'http://griffon-framework.org/guide/latest/api/']
 
     doLast { task ->
         copy {

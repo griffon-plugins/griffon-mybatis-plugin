@@ -51,8 +51,10 @@ license {
     mapping {
         java   = 'SLASHSTAR_STYLE'
         groovy = 'SLASHSTAR_STYLE'
+        gdsl   = 'SLASHSTAR_STYLE'
+        dsld   = 'SLASHSTAR_STYLE'
     }
-    ext.year = '2014-2015'
+    ext.year = '2014-2016'
     exclude '**/*.png'
 }
 

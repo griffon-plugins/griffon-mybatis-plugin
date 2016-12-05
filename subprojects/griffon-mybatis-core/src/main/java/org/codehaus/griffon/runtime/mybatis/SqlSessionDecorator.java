@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2015 the original author or authors.
+ * Copyright 2014-2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package org.codehaus.griffon.runtime.mybatis;
 
+import org.apache.ibatis.cursor.Cursor;
 import org.apache.ibatis.executor.BatchResult;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.ResultHandler;
@@ -81,6 +82,21 @@ public class SqlSessionDecorator implements SqlSession {
     @Override
     public <K, V> Map<K, V> selectMap(String statement, Object parameter, String mapKey, RowBounds rowBounds) {
         return delegate.selectMap(statement, parameter, mapKey, rowBounds);
+    }
+
+    @Override
+    public <T> Cursor<T> selectCursor(String statement) {
+        return delegate.selectCursor(statement);
+    }
+
+    @Override
+    public <T> Cursor<T> selectCursor(String statement, Object parameter) {
+        return delegate.selectCursor(statement, parameter);
+    }
+
+    @Override
+    public <T> Cursor<T> selectCursor(String statement, Object parameter, RowBounds rowBounds) {
+        return delegate.selectCursor(statement, parameter, rowBounds);
     }
 
     @Override
