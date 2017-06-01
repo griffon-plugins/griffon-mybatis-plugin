@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2016 the original author or authors.
+ * Copyright 2014-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
  */
 package griffon.plugins.mybatis
 
-import griffon.core.CallableWithArgs
 import griffon.core.GriffonApplication
+import griffon.core.RunnableWithArgs
 import griffon.core.test.GriffonUnitRule
 import griffon.inject.BindTo
 import griffon.plugins.mybatis.exceptions.RuntimeMybatisException
@@ -55,7 +55,7 @@ class MybatisSpec extends Specification {
         eventNames.each { name ->
             application.eventRouter.addEventListener(name, { Object... args ->
                 events << [name: name, args: args]
-            } as CallableWithArgs)
+            } as RunnableWithArgs)
         }
 
         when:
@@ -83,7 +83,7 @@ class MybatisSpec extends Specification {
         assert !bootstrap.initWitness
 
         when:
-        mybatisHandler.withSqlSession { String sessionFactoryName, SqlSession session ->  }
+        mybatisHandler.withSqlSession { String sessionFactoryName, SqlSession session -> }
 
         then:
         bootstrap.initWitness
@@ -96,7 +96,7 @@ class MybatisSpec extends Specification {
         assert !bootstrap.destroyWitness
 
         when:
-        mybatisHandler.withSqlSession { String sessionFactoryName, SqlSession session ->  }
+        mybatisHandler.withSqlSession { String sessionFactoryName, SqlSession session -> }
         mybatisHandler.closeSqlSession()
 
         then:

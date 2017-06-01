@@ -66,11 +66,11 @@ task apiDocs(type: Javadoc, dependsOn: copyDocs) {
     options.docTitle    = "${pluginBaseName} ${project.version}"
     options.footer      = project.javadocFooter
     options.links       = ['http://www.slf4j.org/apidocs/',
-                           'http://junit.org/javadoc/latest/',
-                           'http://docs.oracle.com/javase/7/docs/api/',
-                           'http://jsr-305.googlecode.com/svn/trunk/javadoc/',
-                           'http://atinject.googlecode.com/svn/trunk/javadoc/',
-                           'http://griffon-framework.org/guide/latest/api/']
+                           'http://junit.org/junit4/javadoc/latest/',
+                           'http://docs.oracle.com/javase/8/docs/api/',
+                           'http://aalmiray.github.io/jsr-305/apidocs/',
+                           'http://javax-inject.github.io/javax-inject/api/',
+                           "http://griffon-framework.org/guide/${griffonVersion}/api".toString()]
 
     doLast { task ->
         copy {

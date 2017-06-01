@@ -3,19 +3,21 @@ import java.text.SimpleDateFormat
 buildscript {
     repositories {
         jcenter()
+        maven { url 'https://plugins.gradle.org/m2/' }
         mavenLocal()
     }
 
     dependencies {
-        classpath 'org.codehaus.griffon:gradle-griffon-plugin:2.9.1'
-        classpath 'org.codehaus.griffon:gradle-griffon-build-plugin:2.9.1'
-        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.7.1'
+        classpath "org.codehaus.griffon:gradle-griffon-plugin:$griffonVersion"
+        classpath "org.codehaus.griffon:gradle-griffon-build-plugin:$griffonVersion"
+        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.8.1'
         classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.11.0'
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
         classpath 'org.ajoberstar:gradle-git:1.3.2'
         classpath 'org.kordamp.gradle:stats-gradle-plugin:0.2.0'
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.13.0'
-        classpath 'net.nemerosa:versioning:2.5.1'
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.14.0'
+        classpath 'net.nemerosa:versioning:2.6.0'
+        classpath 'net.ltgt.gradle:gradle-apt-plugin:0.10'
     }
 }
 
@@ -53,6 +55,19 @@ allprojects {
             options.addStringOption('Xdoclint:none', '-quiet')
         }
     }
+
+    dependencyUpdates.resolutionStrategy = {
+        componentSelection { rules ->
+            rules.all { selection ->
+                boolean rejected = ['alpha', 'beta', 'rc', 'cr', 'm'].any { qualifier ->
+                    selection.candidate.version ==~ /(?i).*[.-]${qualifier}[.\d-]*/
+                }
+                if (rejected) {
+                    selection.reject('Release candidate')
+                }
+            }
+        }
+    }
 }
 
 apply plugin: 'jacoco'
@@ -64,6 +79,7 @@ jacoco {
 ext.jacocoProjects = []
 
 subprojects { subproj ->
+    subproj.apply plugin: 'net.ltgt.apt'
     plugins.withType(JavaPlugin) {
         subproj.tasks.withType(JavaCompile) {
             sourceCompatibility = subproj.sourceCompatibility
@@ -74,7 +90,6 @@ subprojects { subproj ->
             sourceCompatibility = subproj.sourceCompatibility
             targetCompatibility = subproj.targetCompatibility
         }
-
 
         dependencies {
             testCompile "junit:junit:$junitVersion"
