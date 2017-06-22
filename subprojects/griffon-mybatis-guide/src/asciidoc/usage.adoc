@@ -2,7 +2,7 @@
 [[_Usage]]
 = Usage
 
-The following sections describe how you may use this plugin in an project.
+The following sections describe how you may use this plugin in a project.
 
 == Configuration
 

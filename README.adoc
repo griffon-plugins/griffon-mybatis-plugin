@@ -9,6 +9,11 @@ image:https://api.bintray.com/packages/griffon/griffon-plugins/{project-name}/im
 
 ---
 
+image:https://img.shields.io/gitter/room/griffon/griffon.js.svg[link="https://gitter.im/griffon/griffon]
+image:https://img.shields.io/badge/donations-Patreon-orange.svg[https://www.patreon.com/user?u=6609318]
+
+---
+
 The Mybatis plugin enables lightweight access multiple datasources using link:http://mybatis.github.io/mybatis-3[MyBatis, window="_blank"].
 This plugin does NOT provide domain classes nor dynamic finders like GORM does.
 
