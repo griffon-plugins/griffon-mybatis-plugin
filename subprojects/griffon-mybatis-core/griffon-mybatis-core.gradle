@@ -13,7 +13,7 @@ apply from: rootProject.file('gradle/code-coverage.gradle')
 dependencies {
     compile "org.mybatis:mybatis:$mybatisVersion"
 
-    compile 'org.codehaus.griffon.plugins:griffon-datasource-core:2.0.0'
+    compile 'org.codehaus.griffon.plugins:griffon-datasource-core:2.1.0'
 
     testCompileOnly "org.codehaus.griffon:griffon-groovy-compile:${griffon.version}"
 

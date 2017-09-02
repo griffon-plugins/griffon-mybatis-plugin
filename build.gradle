@@ -15,8 +15,8 @@ buildscript {
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
         classpath 'org.ajoberstar:gradle-git:1.3.2'
         classpath 'org.kordamp.gradle:stats-gradle-plugin:0.2.0'
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.14.0'
-        classpath 'net.nemerosa:versioning:2.6.0'
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.15.0'
+        classpath 'net.nemerosa:versioning:2.6.1'
         classpath 'net.ltgt.gradle:gradle-apt-plugin:0.10'
     }
 }
@@ -105,6 +105,13 @@ subprojects { subproj ->
             description 'An archive of the source code'
             classifier 'sources'
             from sourceSets.main.allSource
+        }
+
+        task javadocJar(type: Jar) {
+            group 'Build'
+            description 'An archive of the Javadocs'
+            classifier 'javadoc'
+            from javadoc.destinationDir
         }
 
         tasks.withType(AbstractCompile) {

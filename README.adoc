@@ -2,15 +2,14 @@
 :linkattrs:
 :project-name: griffon-mybatis-plugin
 
-image:http://img.shields.io/travis/griffon-plugins/{project-name}/master.svg["Build Status", link="https://travis-ci.org/griffon-plugins/{project-name}"]
-image:http://img.shields.io/coveralls/griffon-plugins/{project-name}/master.svg["Coverage Status", link="https://coveralls.io/r/griffon-plugins/{project-name}"]
-image:http://img.shields.io/badge/license-ASF2-blue.svg["Apache License 2", link="http://www.apache.org/licenses/LICENSE-2.0.txt"]
-image:https://api.bintray.com/packages/griffon/griffon-plugins/{project-name}/images/download.svg[link="https://bintray.com/griffon/griffon-plugins/{project-name}/_latestVersion"]
-
----
+image:https://img.shields.io/travis/griffon-plugins/{project-name}/master.svg["Build Status", link="https://travis-ci.org/griffon-plugins/{project-name}"]
+image:https://img.shields.io/coveralls/griffon-plugins/{project-name}/master.svg["Coverage Status", link="https://coveralls.io/r/griffon-plugins/{project-name}"]
+image:https://img.shields.io/badge/license-ASF2-blue.svg["Apache License 2", link="http://www.apache.org/licenses/LICENSE-2.0.txt"]
+image:https://img.shields.io/maven-central/v/org.codehaus.griffon.plugins/{project-name}.svg[Download, link="https://search.maven.org/#search|ga|1|{project-name}"]
+image:https://img.shields.io/bintray/v/griffon/griffon-plugins/{project-name}.svg[Download, link="https://bintray.com/griffon/griffon-plugins/{project-name}"]
 
 image:https://img.shields.io/gitter/room/griffon/griffon.svg[link="https://gitter.im/griffon/griffon]
-image:https://img.shields.io/badge/donations-Patreon-orange.svg[link="https://www.patreon.com/user?u=6609318"]
+image:https://img.shields.io/badge/donations-Patreon-f96854.svg[link="https://www.patreon.com/user?u=6609318"]
 
 ---
 
