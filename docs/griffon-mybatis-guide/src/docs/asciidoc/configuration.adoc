@@ -29,7 +29,7 @@ You will need to configure any of the following blocks depending on your setup
 [subs="attributes"]
 ----
 dependencies {
-    compile '{project-group}:griffon-mybatis-core:{project-version}'
+    api '{project-group}:griffon-mybatis-core:{project-version}'
 }
 ----
 

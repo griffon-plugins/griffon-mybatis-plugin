@@ -24,7 +24,7 @@ import org.codehaus.groovy.ast.expr.MethodCallExpression
 
 supportsVersion(groovyEclipse: '2.5.1')
 
-contribute(enclosingClass(annotatedBy('griffon.transform.MybatisAware'))) {
+contribute(enclosingClass(annotatedBy('griffon.transform.mybatis.MybatisAware'))) {
     provider = 'griffon-mybatis'
     delegatesTo 'griffon.plugins.mybatis.MybatisHandler'
 }

@@ -20,6 +20,6 @@ import com.intellij.patterns.*
  * @author Andres Almiray
  */
 
-contributor(scope: annotatedScope(ctype: 'griffon.transform.MybatisAware')) {
+contributor(scope: annotatedScope(ctype: 'griffon.transform.mybatis.MybatisAware')) {
     delegatesTo(findClass('griffon.plugins.mybatis.MybatisHandler'))
 }

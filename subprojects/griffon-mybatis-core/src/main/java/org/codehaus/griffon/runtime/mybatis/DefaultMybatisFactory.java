@@ -1,11 +1,13 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Copyright 2014-2020 The author and/or original authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,6 +17,7 @@
  */
 package org.codehaus.griffon.runtime.mybatis;
 
+import griffon.annotations.core.Nonnull;
 import griffon.core.ApplicationClassLoader;
 import griffon.core.GriffonApplication;
 import griffon.core.env.Metadata;
@@ -25,8 +28,11 @@ import griffon.plugins.monitor.MBeanManager;
 import griffon.plugins.mybatis.MybatisBootstrap;
 import griffon.plugins.mybatis.MybatisFactory;
 import griffon.plugins.mybatis.MybatisMapper;
+import griffon.plugins.mybatis.events.MybatisConnectEndEvent;
+import griffon.plugins.mybatis.events.MybatisConnectStartEvent;
+import griffon.plugins.mybatis.events.MybatisDisconnectEndEvent;
+import griffon.plugins.mybatis.events.MybatisDisconnectStartEvent;
 import griffon.util.GriffonClassUtils;
-import griffon.util.ServiceLoaderUtils;
 import org.apache.ibatis.mapping.Environment;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSession;
@@ -34,11 +40,11 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.codehaus.griffon.runtime.core.storage.AbstractObjectFactory;
-import org.codehaus.griffon.runtime.jmx.SqlSessionFactoryMonitor;
+import org.codehaus.griffon.runtime.mybatis.monitor.SqlSessionFactoryMonitor;
+import org.kordamp.jipsy.util.TypeLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.sql.DataSource;
@@ -50,7 +56,6 @@ import java.util.Set;
 import static griffon.core.GriffonExceptionHandler.sanitize;
 import static griffon.util.ConfigUtils.getConfigValueAsBoolean;
 import static griffon.util.GriffonNameUtils.requireNonBlank;
-import static java.util.Arrays.asList;
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -60,26 +65,19 @@ public class DefaultMybatisFactory extends AbstractObjectFactory<SqlSessionFacto
     private static final Logger LOG = LoggerFactory.getLogger(DefaultMybatisFactory.class);
     private static final String ERROR_SESSION_FACTORY_NAME_BLANK = "Argument 'sessionFactoryName' must not be blank";
     private final Set<String> sessionFactoryNames = new LinkedHashSet<>();
-
+    private final Set<Class<?>> mappers = new LinkedHashSet<>();
     @Inject
     private DataSourceFactory dataSourceFactory;
-
     @Inject
     private DataSourceStorage dataSourceStorage;
-
     @Inject
     private ApplicationClassLoader applicationClassLoader;
-
     @Inject
     private Injector injector;
-
     @Inject
     private MBeanManager mBeanManager;
-
     @Inject
     private Metadata metadata;
-
-    private final Set<Class<?>> mappers = new LinkedHashSet<>();
 
     @Inject
     public DefaultMybatisFactory(@Nonnull @Named("mybatis") griffon.core.Configuration configuration, @Nonnull GriffonApplication application) {
@@ -87,7 +85,7 @@ public class DefaultMybatisFactory extends AbstractObjectFactory<SqlSessionFacto
         sessionFactoryNames.add(KEY_DEFAULT);
 
         if (configuration.containsKey(getPluralKey())) {
-            Map<String, Object> sessionFactories = (Map<String, Object>) configuration.get(getPluralKey());
+            Map<String, Object> sessionFactories = configuration.get(getPluralKey());
             sessionFactoryNames.addAll(sessionFactories.keySet());
         }
     }
@@ -121,7 +119,7 @@ public class DefaultMybatisFactory extends AbstractObjectFactory<SqlSessionFacto
     @Override
     public SqlSessionFactory create(@Nonnull String name) {
         Map<String, Object> config = narrowConfig(name);
-        event("MybatisConnectStart", asList(name, config));
+        event(MybatisConnectStartEvent.of(name, config));
         SqlSessionFactory sqlSessionFactory = createSqlSessionFactory(config, name);
 
         if (getConfigValueAsBoolean(config, "jmx", true)) {
@@ -135,7 +133,7 @@ public class DefaultMybatisFactory extends AbstractObjectFactory<SqlSessionFacto
             }
         }
 
-        event("MybatisConnectEnd", asList(name, config, sqlSessionFactory));
+        event(MybatisConnectEndEvent.of(name, config, sqlSessionFactory));
         return sqlSessionFactory;
     }
 
@@ -143,7 +141,7 @@ public class DefaultMybatisFactory extends AbstractObjectFactory<SqlSessionFacto
     public void destroy(@Nonnull String name, @Nonnull SqlSessionFactory instance) {
         requireNonNull(instance, "Argument 'instance' must not be null");
         Map<String, Object> config = narrowConfig(name);
-        event("MybatisDisconnectStart", asList(name, config, instance));
+        event(MybatisDisconnectStartEvent.of(name, config, instance));
 
         try (SqlSession session = openSession(name, instance)) {
             for (Object o : injector.getInstances(MybatisBootstrap.class)) {
@@ -154,16 +152,23 @@ public class DefaultMybatisFactory extends AbstractObjectFactory<SqlSessionFacto
         closeDataSource(name);
 
         if (getConfigValueAsBoolean(config, "jmx", true)) {
-            ((JMXAwareSqlSessionFactory) instance).disposeMBeans();
+            unregisterMBeans((JMXAwareSqlSessionFactory) instance);
         }
 
-        event("MybatisDisconnectEnd", asList(name, config));
+        event(MybatisDisconnectEndEvent.of(name, config));
     }
 
     private void registerMBeans(@Nonnull String name, @Nonnull JMXAwareSqlSessionFactory sqlSessionFactory) {
         RecordingSqlSessionFactory recordingSqlSessionFactory = (RecordingSqlSessionFactory) sqlSessionFactory.getDelegate();
         SqlSessionFactoryMonitor sqlSessionFactoryMonitor = new SqlSessionFactoryMonitor(metadata, recordingSqlSessionFactory, name);
         sqlSessionFactory.addObjectName(mBeanManager.registerMBean(sqlSessionFactoryMonitor, false).getCanonicalName());
+    }
+
+    private void unregisterMBeans(@Nonnull JMXAwareSqlSessionFactory sqlSessionFactory) {
+        for (String objectName : sqlSessionFactory.getObjectNames()) {
+            mBeanManager.unregisterMBean(objectName);
+        }
+        sqlSessionFactory.clearObjectNames();
     }
 
     @Nonnull
@@ -212,7 +217,7 @@ public class DefaultMybatisFactory extends AbstractObjectFactory<SqlSessionFacto
     }
 
     private void readMappers() {
-        ServiceLoaderUtils.load(applicationClassLoader.get(), "META-INF/types/", MybatisMapper.class, new ServiceLoaderUtils.LineProcessor() {
+        TypeLoader.load(applicationClassLoader.get(), "META-INF/types/", MybatisMapper.class, new TypeLoader.LineProcessor() {
             @Override
             public void process(@Nonnull ClassLoader classLoader, @Nonnull Class<?> type, @Nonnull String line) {
                 try {

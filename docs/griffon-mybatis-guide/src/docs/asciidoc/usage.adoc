@@ -22,7 +22,7 @@ environment may connect to a different database.
 [source,groovy,options="nowrap"]
 .src/main/resources/Mybatis.groovy
 ----
-include::{path_griffon_mybatis_core}/src/test/resources/Mybatis.groovy[lines=16..37]
+include::{path_griffon_mybatis_core}/src/test/resources/Mybatis.groovy[lines=18..39]
 ----
 
 You may configure multiple named SqlSessionFactories (the default factory is aptly named `default`) as the following snippet
@@ -31,18 +31,17 @@ shows
 [source,groovy,options="nowrap"]
 .src/main/resources/Mybatis.groovy
 ----
-include::{path_griffon_mybatis_core}/src/test/resources/Mybatis.groovy[lines=39..46]
+include::{path_griffon_mybatis_core}/src/test/resources/Mybatis.groovy[lines=41..48]
 ----
 
 The following properties are optional
 
 [cols="4*",options="header"]
 |===
-
 | Property           | Type    | Default | Description
 | connect_on_startup | boolean | false   | Establishes a connection to the datasource at the beginning of the `Startup` phase.
 | jmx                | boolean | true    | Expose sessions using JMX.
-
+| pooled             | boolean | true    | Whether to use Hikari as connection pool or not.
 |===
 
 The plugin's <<_modules, module>> registers a `{api_mybatis_handler}` helper class that defines the base contract
@@ -64,7 +63,7 @@ with JDK8+ or closures if running Groovy.
 [source,java,options="nowrap"]
 .griffon.plugins.mybatis.MybatisCallback.java
 ----
-include::{path_griffon_mybatis_core}/src/main/java/griffon/plugins/mybatis/MybatisCallback.java[lines=25..-1]
+include::{path_griffon_mybatis_core}/src/main/java/griffon/plugins/mybatis/MybatisCallback.java[lines=26..-1]
 ----
 
 === Mappers
@@ -75,7 +74,7 @@ that should be added to a `{link_sql_session_factory}` as long as they are annot
 [source,groovy,options="nowrap"]
 .src/main/groovy/griffon/plugins/mybatis/mappers/PersonMapper.groovy
 ----
-include::{path_griffon_mybatis_core}/src/test/groovy/griffon/plugins/mybatis/mappers/PersonMapper.groovy[lines=16..-1]
+include::{path_griffon_mybatis_core}/src/test/groovy/griffon/plugins/mybatis/mappers/PersonMapper.groovy[lines=18..-1]
 ----
 
 Don't forget mappers require a matching XML file that contains query definitions, such as
@@ -84,7 +83,7 @@ Don't forget mappers require a matching XML file that contains query definitions
 [subs="verbatim,attributes"]
 .src/main/resources/griffon/plugins/mybatis/mappers/PersonMapper.xml
 ----
-include::{path_griffon_mybatis_core}/src/test/resources/griffon/plugins/mybatis/mappers/PersonMapper.xml[lines=19..-1]
+include::{path_griffon_mybatis_core}/src/test/resources/griffon/plugins/mybatis/mappers/PersonMapper.xml[lines=23..-1]
 ----
 
 === Bootstrap
@@ -148,19 +147,19 @@ The following is a trivial usage of the `{api_mybatis_handler}` inside a Java se
 package com.acme;
 
 import griffon.core.artifact.GriffonService;
-import griffon.metadata.ArtifactProviderFor;
 import org.codehaus.griffon.runtime.core.artifact.AbstractGriffonService;
 
 import griffon.plugins.mybatis.MybatisHandler;
 import griffon.plugins.mybatis.MybatisCallback;
 import org.apache.ibatis.session.SqlSession;
+import org.kordamp.jipsy.ServiceProviderFor;
 
 import com.acme.mappers.PersonMapper;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
 
-@ArtifactProviderFor(GriffonService.class)
+@ServiceProviderFor(GriffonService.class)
 public class SampleService extends AbstractGriffonService {
     @Inject
     private MybatisHandler mybatisHandler;
@@ -184,16 +183,16 @@ Here's the Groovy version of it
 package com.acme
 
 import griffon.core.artifact.GriffonService
-import griffon.metadata.ArtifactProviderFor
 
 import griffon.plugins.mybatis.MybatisHandler
 import org.apache.ibatis.session.SqlSession
+import org.kordamp.jipsy.ServiceProviderFor
 
 import com.acme.mappers.PersonMapper
 
 import javax.inject.Inject
 
-@ArtifactProviderFor(GriffonService)
+@ServiceProviderFor(GriffonService)
 class SampleService {
     @Inject
     private MybatisHandler mybatisHandler
@@ -228,15 +227,15 @@ into said class. The previous Groovy service example can be rewritten as follows
 package com.acme
 
 import griffon.core.artifact.GriffonService
-import griffon.metadata.ArtifactProviderFor
 import griffon.transform.MybatisAware
 
 import org.apache.ibatis.session.SqlSession
+import org.kordamp.jipsy.ServiceProviderFor
 
 import com.acme.mappers.PersonMapper
 
 @MybatisAware
-@ArtifactProviderFor(GriffonService)
+@ServiceProviderFor(GriffonService)
 class SampleService {
     String getPersonName(int id) {
          withSqlSession { String sessionFactoryName, SqlSession session ->

@@ -1,11 +1,13 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Copyright 2014-2020 The author and/or original authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,9 +17,10 @@
  */
 package org.codehaus.griffon.runtime.mybatis;
 
+import griffon.annotations.core.Nonnull;
 import org.codehaus.griffon.runtime.core.configuration.ResourceBundleConfiguration;
 
-import javax.annotation.Nonnull;
+import javax.application.converter.ConverterRegistry;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.ResourceBundle;
@@ -27,7 +30,8 @@ import java.util.ResourceBundle;
  */
 public class DefaultMybatisConfiguration extends ResourceBundleConfiguration {
     @Inject
-    public DefaultMybatisConfiguration(@Nonnull @Named("mybatis") ResourceBundle resourceBundle) {
-        super(resourceBundle);
+    public DefaultMybatisConfiguration(@Nonnull ConverterRegistry converterRegistry,
+                                       @Nonnull @Named("mybatis") ResourceBundle resourceBundle) {
+        super(converterRegistry, resourceBundle);
     }
 }

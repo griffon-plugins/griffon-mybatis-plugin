@@ -1,11 +1,13 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Copyright 2014-2020 The author and/or original authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,14 +17,14 @@
  */
 package org.codehaus.griffon.runtime.mybatis;
 
+import griffon.annotations.core.Nonnull;
 import org.apache.ibatis.session.SqlSessionFactory;
 
-import javax.annotation.Nonnull;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 import static griffon.util.GriffonNameUtils.requireNonBlank;
-import static griffon.util.MXBeanUtils.unregisterFromPlatformMBeanServer;
 
 /**
  * @author Andres Almiray
@@ -43,9 +45,12 @@ public class JMXAwareSqlSessionFactory extends SqlSessionFactoryDecorator {
         objectNames.remove(requireNonBlank(objectName, ERROR_OBJECT_NAME_BLANK));
     }
 
-    public void disposeMBeans() {
-        for (String objectName : objectNames) {
-            unregisterFromPlatformMBeanServer(objectName);
-        }
+    @Nonnull
+    public Set<String> getObjectNames() {
+        return Collections.unmodifiableSet(objectNames);
+    }
+
+    public void clearObjectNames() {
+        objectNames.clear();
     }
 }

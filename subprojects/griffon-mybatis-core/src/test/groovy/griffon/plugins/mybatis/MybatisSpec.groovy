@@ -1,11 +1,13 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Copyright 2014-2020 The author and/or original authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,17 +17,25 @@
  */
 package griffon.plugins.mybatis
 
+import griffon.annotations.inject.BindTo
 import griffon.core.GriffonApplication
-import griffon.core.RunnableWithArgs
-import griffon.core.test.GriffonUnitRule
-import griffon.inject.BindTo
+import griffon.plugins.datasource.events.DataSourceConnectEndEvent
+import griffon.plugins.datasource.events.DataSourceConnectStartEvent
+import griffon.plugins.datasource.events.DataSourceDisconnectEndEvent
+import griffon.plugins.datasource.events.DataSourceDisconnectStartEvent
+import griffon.plugins.mybatis.events.MybatisConnectEndEvent
+import griffon.plugins.mybatis.events.MybatisConnectStartEvent
+import griffon.plugins.mybatis.events.MybatisDisconnectEndEvent
+import griffon.plugins.mybatis.events.MybatisDisconnectStartEvent
 import griffon.plugins.mybatis.exceptions.RuntimeMybatisException
 import griffon.plugins.mybatis.mappers.PersonMapper
+import griffon.test.core.GriffonUnitRule
 import org.apache.ibatis.session.SqlSession
 import org.junit.Rule
 import spock.lang.Specification
 import spock.lang.Unroll
 
+import javax.application.event.EventHandler
 import javax.inject.Inject
 
 @Unroll
@@ -46,17 +56,13 @@ class MybatisSpec extends Specification {
     void 'Open and close default mybatis'() {
         given:
         List eventNames = [
-            'MybatisConnectStart', 'DataSourceConnectStart',
-            'DataSourceConnectEnd', 'MybatisConnectEnd',
-            'MybatisDisconnectStart', 'DataSourceDisconnectStart',
-            'DataSourceDisconnectEnd', 'MybatisDisconnectEnd'
+            'MybatisConnectStartEvent', 'DataSourceConnectStartEvent',
+            'DataSourceConnectEndEvent', 'MybatisConnectEndEvent',
+            'MybatisDisconnectStartEvent', 'DataSourceDisconnectStartEvent',
+            'DataSourceDisconnectEndEvent', 'MybatisDisconnectEndEvent'
         ]
-        List events = []
-        eventNames.each { name ->
-            application.eventRouter.addEventListener(name, { Object... args ->
-                events << [name: name, args: args]
-            } as RunnableWithArgs)
-        }
+        TestEventHandler testEventHandler = new TestEventHandler()
+        application.eventRouter.subscribe(testEventHandler)
 
         when:
         mybatisHandler.withSqlSession { String sessionFactoryName, SqlSession session ->
@@ -67,8 +73,8 @@ class MybatisSpec extends Specification {
         mybatisHandler.closeSqlSession()
 
         then:
-        events.size() == 8
-        events.name == eventNames
+        testEventHandler.events.size() == 8
+        testEventHandler.events == eventNames
     }
 
     void 'Connect to default sqlSessionFactory'() {
@@ -137,13 +143,13 @@ class MybatisSpec extends Specification {
         when:
         List peopleIn = mybatisHandler.withSqlSession('people') { String sessionFactoryName, SqlSession session ->
             PersonMapper personMapper = session.getMapper(PersonMapper)
-            [[id: 1, name: 'Danno',     lastname: 'Ferrin'],
-             [id: 2, name: 'Andres',    lastname: 'Almiray'],
-             [id: 3, name: 'James',     lastname: 'Williams'],
+            [[id: 1, name: 'Danno', lastname: 'Ferrin'],
+             [id: 2, name: 'Andres', lastname: 'Almiray'],
+             [id: 3, name: 'James', lastname: 'Williams'],
              [id: 4, name: 'Guillaume', lastname: 'Laforge'],
-             [id: 5, name: 'Jim',       lastname: 'Shingler'],
+             [id: 5, name: 'Jim', lastname: 'Shingler'],
              [id: 6, name: 'Alexander', lastname: 'Klein'],
-             [id: 7, name: 'Rene',      lastname: 'Groeschke']].each { data ->
+             [id: 7, name: 'Rene', lastname: 'Groeschke']].each { data ->
                 Person person = new Person()
                 data.each { propName, propValue ->
                     person[propName] = propValue
@@ -174,4 +180,48 @@ class MybatisSpec extends Specification {
 
     @BindTo(MybatisBootstrap)
     private TestMybatisBootstrap bootstrap = new TestMybatisBootstrap()
+
+    private class TestEventHandler {
+        List<String> events = []
+
+        @EventHandler
+        void handleDataSourceConnectStartEvent(DataSourceConnectStartEvent event) {
+            events << event.class.simpleName
+        }
+
+        @EventHandler
+        void handleDataSourceConnectEndEvent(DataSourceConnectEndEvent event) {
+            events << event.class.simpleName
+        }
+
+        @EventHandler
+        void handleDataSourceDisconnectStartEvent(DataSourceDisconnectStartEvent event) {
+            events << event.class.simpleName
+        }
+
+        @EventHandler
+        void handleDataSourceDisconnectEndEvent(DataSourceDisconnectEndEvent event) {
+            events << event.class.simpleName
+        }
+
+        @EventHandler
+        void handleMybatisConnectStartEvent(MybatisConnectStartEvent event) {
+            events << event.class.simpleName
+        }
+
+        @EventHandler
+        void handleMybatisConnectEndEvent(MybatisConnectEndEvent event) {
+            events << event.class.simpleName
+        }
+
+        @EventHandler
+        void handleMybatisDisconnectStartEvent(MybatisDisconnectStartEvent event) {
+            events << event.class.simpleName
+        }
+
+        @EventHandler
+        void handleMybatisDisconnectEndEvent(MybatisDisconnectEndEvent event) {
+            events << event.class.simpleName
+        }
+    }
 }

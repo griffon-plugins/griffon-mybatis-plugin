@@ -1,11 +1,13 @@
 /*
- * Copyright 2014-2017 the original author or authors.
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Copyright 2014-2020 The author and/or original authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,8 +31,8 @@ class MybatisAwareASTTransformationSpec extends Specification {
         GroovyShell shell = new GroovyShell()
 
         when:
-        def bean = shell.evaluate('''
-        @griffon.transform.MybatisAware
+        def bean = shell.evaluate('''import griffon.transform.mybatis.MybatisAware
+        @griffon.transform.mybatis.MybatisAware
         class Bean { }
         new Bean()
         ''')
@@ -40,9 +42,9 @@ class MybatisAwareASTTransformationSpec extends Specification {
         MybatisHandler.methods.every { Method target ->
             bean.class.declaredMethods.find { Method candidate ->
                 candidate.name == target.name &&
-                candidate.returnType == target.returnType &&
-                candidate.parameterTypes == target.parameterTypes &&
-                candidate.exceptionTypes == target.exceptionTypes
+                    candidate.returnType == target.returnType &&
+                    candidate.parameterTypes == target.parameterTypes &&
+                    candidate.exceptionTypes == target.exceptionTypes
             }
         }
     }
@@ -57,15 +59,16 @@ class MybatisAwareASTTransformationSpec extends Specification {
         import griffon.plugins.mybatis.exceptions.RuntimeMybatisException
         import griffon.plugins.mybatis.MybatisHandler
 
-        import javax.annotation.Nonnull
-        @griffon.transform.MybatisAware
+        import griffon.annotations.core.Nonnull
+import griffon.transform.mybatis.MybatisAware
+        @griffon.transform.mybatis.MybatisAware
         class MybatisHandlerBean implements MybatisHandler {
             @Override
-            public <R> R withSqlSession(@Nonnull MybatisCallback<R> callback) throws RuntimeMybatisException {
+             <R> R withSqlSession(@Nonnull MybatisCallback<R> callback) throws RuntimeMybatisException {
                 return null
             }
             @Override
-            public <R> R withSqlSession(@Nonnull String sessionFactoryName, @Nonnull MybatisCallback<R> callback) throws RuntimeMybatisException {
+             <R> R withSqlSession(@Nonnull String sessionFactoryName, @Nonnull MybatisCallback<R> callback) throws RuntimeMybatisException {
                 return null
             }
             @Override

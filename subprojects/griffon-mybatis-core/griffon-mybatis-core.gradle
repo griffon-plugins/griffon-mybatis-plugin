@@ -1,27 +1,30 @@
-apply plugin: 'groovy'
-apply plugin: 'org.codehaus.griffon.griffon'
-
-griffon {
-    disableDependencyResolution = false
-    includeGroovyDependencies = false
-    version = rootProject.griffonVersion
-    applicationProject = false
-}
-
-apply from: rootProject.file('gradle/code-coverage.gradle')
-
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Copyright 2014-2020 The author and/or original authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 dependencies {
-    compile "org.mybatis:mybatis:$mybatisVersion"
+    api 'org.codehaus.griffon.plugins:griffon-datasource-core:3.0.0-SNAPSHOT'
 
-    compile 'org.codehaus.griffon.plugins:griffon-datasource-core:2.1.0'
+    api "org.mybatis:mybatis:$mybatisVersion"
 
-    testCompileOnly "org.codehaus.griffon:griffon-groovy-compile:${griffon.version}"
-
-    testRuntime("com.h2database:h2:$h2Version") { transitive = false }
-    testRuntime "org.slf4j:slf4j-simple:$slf4jVersion"
-
-    testRuntime "org.codehaus.griffon:griffon-guice:${griffon.version}"
-    testRuntime "org.codehaus.griffon:griffon-groovy:${griffon.version}"
+    testRuntimeOnly "com.h2database:h2:$h2Version"
 }
 
-compileGroovy.enabled = false
+jar {
+    manifest {
+        attributes('Automatic-Module-Name': project.group + '.mybatis.core')
+    }
+}

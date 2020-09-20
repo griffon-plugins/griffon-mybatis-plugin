@@ -15,21 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package griffon.plugins.mybatis.mappers
+package org.codehaus.griffon.runtime.mybatis.monitor;
 
-import griffon.metadata.TypeProviderFor
-import griffon.plugins.mybatis.MybatisMapper
-import griffon.plugins.mybatis.Person
-
-@TypeProviderFor(MybatisMapper)
-interface PersonMapper extends MybatisMapper {
-    Person findPersonById(int id)
-
-    int insert(Person person)
-
-    int update(Person person)
-
-    int delete(Person person)
-
-    List<Person> list()
+/**
+ * @author Andres Almiray
+ * @since 1.2.0
+ */
+public interface SqlSessionFactoryMonitorMXBean {
+    int getSessionCount();
 }
