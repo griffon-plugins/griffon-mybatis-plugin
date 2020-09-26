@@ -17,15 +17,7 @@
  */
 config {
     info {
-        name          = projectDescription
-        description   = projectDescription
         inceptionYear = '2014'
         tags          = ['griffon', 'plugin', 'datasource', 'mybatis']
-    }
-
-    coverage {
-        jacoco {
-            toolVersion = jacocoVersion
-        }
     }
 }

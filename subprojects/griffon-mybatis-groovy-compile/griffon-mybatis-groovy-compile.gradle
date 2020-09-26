@@ -22,12 +22,4 @@ dependencies {
     api(config.dependencies.gav('gipsy')) {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
-
-    annotationProcessor "org.codehaus.griffon:griffon-core-compile:${griffonVersion}"
-}
-
-jar {
-    manifest {
-        attributes('Automatic-Module-Name': project.group + '.mybatis.groovy.compile')
-    }
 }

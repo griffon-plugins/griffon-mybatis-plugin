@@ -63,7 +63,7 @@ with JDK8+ or closures if running Groovy.
 [source,java,options="nowrap"]
 .griffon.plugins.mybatis.MybatisCallback.java
 ----
-include::{path_griffon_mybatis_core}/src/main/java/griffon/plugins/mybatis/MybatisCallback.java[lines=26..-1]
+include::{path_griffon_mybatis_core}/src/main/java/griffon/plugins/mybatis/MybatisCallback.java[lines=28..-1]
 ----
 
 === Mappers
@@ -209,10 +209,10 @@ class SampleService {
 
 The following events will be triggered by `{api_mybatis_handler}`
 
-MybatisConnectStart(String sessionFactoryName, Map<String, Object> config):: Triggered before connecting to the datasource.
-MybatisConnectEnd(String sessionFactoryName, Map<String, Object> config, SqlSessionFactory factory):: Triggered after connecting to the datasource.
-MybatisDisconnectStart(String sessionFactoryName, Map<String, Object> config, SqlSessionFactory factory):: Triggered before disconnecting from the datasource.
-MybatisDisconnectEnd(String sessionFactoryName, Map<String, Object> config):: Triggered after disconnecting from the datasource.
+MybatisConnectStartEvent(String sessionFactoryName, Map<String, Object> config):: Triggered before connecting to the datasource.
+MybatisConnectEndEvent(String sessionFactoryName, Map<String, Object> config, SqlSessionFactory factory):: Triggered after connecting to the datasource.
+MybatisDisconnectStartEvent(String sessionFactoryName, Map<String, Object> config, SqlSessionFactory factory):: Triggered before disconnecting from the datasource.
+MybatisDisconnectEndEvent(String sessionFactoryName, Map<String, Object> config):: Triggered after disconnecting from the datasource.
 
 NOTE: DataSource events may be triggered during connection and disconnection from a `{link_sql_session_factory}`.
 
