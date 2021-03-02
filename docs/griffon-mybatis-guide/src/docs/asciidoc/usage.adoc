@@ -124,7 +124,7 @@ package com.acme;
 import griffon.plugins.mybatis.MybatisBootstrap;
 import griffon.core.injection.Module;
 import org.codehaus.griffon.runtime.core.injection.AbstractModule;
-import org.kordamp.jipsy.ServiceProviderFor;
+import org.kordamp.jipsy.annotations.ServiceProviderFor;
 
 @ServiceProviderFor(Module.class)
 public class ApplicationModule extends AbstractModule {
@@ -152,7 +152,7 @@ import org.codehaus.griffon.runtime.core.artifact.AbstractGriffonService;
 import griffon.plugins.mybatis.MybatisHandler;
 import griffon.plugins.mybatis.MybatisCallback;
 import org.apache.ibatis.session.SqlSession;
-import org.kordamp.jipsy.ServiceProviderFor;
+import org.kordamp.jipsy.annotations.ServiceProviderFor;
 
 import com.acme.mappers.PersonMapper;
 
@@ -186,7 +186,7 @@ import griffon.core.artifact.GriffonService
 
 import griffon.plugins.mybatis.MybatisHandler
 import org.apache.ibatis.session.SqlSession
-import org.kordamp.jipsy.ServiceProviderFor
+import org.kordamp.jipsy.annotations.ServiceProviderFor
 
 import com.acme.mappers.PersonMapper
 
@@ -230,7 +230,7 @@ import griffon.core.artifact.GriffonService
 import griffon.transform.MybatisAware
 
 import org.apache.ibatis.session.SqlSession
-import org.kordamp.jipsy.ServiceProviderFor
+import org.kordamp.jipsy.annotations.ServiceProviderFor
 
 import com.acme.mappers.PersonMapper
 
