@@ -88,14 +88,19 @@ public class DefaultMybatisHandler implements MybatisHandler {
     }
 
     @Nonnull
-    private SqlSession getSqlSession(@Nonnull String sessionFactoryName) {
+    public SqlSession getSqlSession(@Nonnull String sessionFactoryName) {
+        return getSqlSession(sessionFactoryName, true);
+    }
+
+    public SqlSession getSqlSession(@Nonnull String sessionFactoryName, boolean autoCommit) {
         SqlSessionFactory sqlSessionFactory = mybatisStorage.get(sessionFactoryName);
         if (sqlSessionFactory == null) {
             sqlSessionFactory = mybatisFactory.create(sessionFactoryName);
             mybatisStorage.set(sessionFactoryName, sqlSessionFactory);
         }
-        return openSession(sessionFactoryName, sqlSessionFactory);
+        return sqlSessionFactory.openSession(autoCommit);
     }
+
 
     @Nonnull
     protected SqlSession openSession(@Nonnull String sessionFactoryName, @Nonnull SqlSessionFactory sqlSessionFactory) {

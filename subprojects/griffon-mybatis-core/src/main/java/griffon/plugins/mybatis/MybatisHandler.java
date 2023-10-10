@@ -16,6 +16,7 @@
 package griffon.plugins.mybatis;
 
 import griffon.plugins.mybatis.exceptions.RuntimeMybatisException;
+import org.apache.ibatis.session.SqlSession;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -32,6 +33,10 @@ public interface MybatisHandler {
     @Nullable
     <R> R withSqlSession(@Nonnull String sessionFactoryName, @Nonnull MybatisCallback<R> callback)
         throws RuntimeMybatisException;
+
+    SqlSession getSqlSession(@Nonnull String sessionFactoryName);
+
+    SqlSession getSqlSession(@Nonnull String sessionFactoryName, boolean autoCommit);
 
     void closeSqlSession();
 
