@@ -54,7 +54,7 @@ for accessing a datasource and issue SQL queries to it. This class has the follo
 include::{path_griffon_mybatis_core}/src/main/java//griffon/plugins/mybatis/MybatisHandler.java[tags=methods,indent=0]
 ----
 
-These method are aware of multiple datasources. If no sessionFactoryName is specified when calling them then the default
+These methods are aware of multiple datasources. If no sessionFactoryName is specified when calling them then the default
 datasource will be selected. You can inject an instance of this class anywhere it's needed using `@Inject`. There is one
 callback you may use with this method: `{api_mybatis_callback}`.
 
@@ -253,3 +253,76 @@ These descriptors are found inside the `griffon-mybatis-groovy-compile-{project-
 
  * dsdl/griffon_mybatis.dsld
  * gdsl/griffon_mybatis.gdsl
+
+== Transactions
+
+The methods shown thus far all use the default behavior of AUTOCOMMIT = true.
+This is fine is you are only reading data but, especially if you are modifying dependent rows in
+different tables, you may need to use transaction. It is *VERY IMPORTANT* that transactions never span a
+user interaction. To use transactions, you need to get a SqlSession with AUTOCOMMIT set to false. This session
+will be then used to begin a new transaction, perform any inserts, deletes, updates, or even selects and finally
+either commit or rollback the transaction. The session can (and probably should) then be closed.
+
+The database work with transactions will usually all be done within a Griffon Service. The session can then be
+held by the service. Since all Griffon Services are Singletons, you can be sure that there will be only one instance and thus only the one session. It is very important that all interactions with those table are
+initiated by the same session since those SQL statements will create locks on rows that are modified (and
+possibly additional rows). Those locks belong to the session and other sessions will either not see the changes
+or wait for the Commit to occur. The difference depends on the database in use and the specific SQL statements.
+
+The general pattern for this type of code is:
+
+[source,groovy,options="nowrap"]
+----
+    @javax.inject.Inject
+    private MybatisHandler handler
+
+    private SqlSession currentSession = null
+
+    void beginTransaction() {
+        if (currentSession == null) {
+            currentSession = handler.getSqlSession("default", false)
+        }
+    }
+----
+
+Other routines within the database service can then use that session:
+[source,groovy,options="nowrap"]
+----
+public  int updatePerson(Person person) {
+             PersonMapper mapper = currentSession.getMapper(PersonMapper.class);
+             int updateCount = mapper.updatePerson(person)
+             return updatePerson
+         }
+----
+
+Finally the transaction should be either committed or rolled back:
+[source,groovy,options="nowrap"]
+----
+    void commitWork() {
+        if (currentSession == null) {
+            throw new RuntimeException("Attempting to commit work when not in a transaction")
+        }
+        currentSession.commit()
+        currentSession.close()
+        currentSession = null
+    }
+----
+The commit may close the session or leave it around for later use. If it is unused for very long, (especially if there is a user interaction involved)
+it will automatically be closed.
+
+
+Rollback would be similar except currentSession.rollback() would be used
+
+The code using making use of the database service should enclose the service requests within a TRY, CATCH, FINALLY block to ensure that any errors cause the changes to be rolled back:
+[source,groovy,options="nowrap"]
+----
+try {
+    databaseService.beginTransaction()
+....
+    databaseService.commitWork()
+}  catch (Exception exception) {
+    databaseService.rollback()
+}  finally {
+    databaseService.closeSession()
+}
+----
